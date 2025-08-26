@@ -18,18 +18,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { code } = acceptInviteSchema.parse(body)
 
-    // Check if user is already in a pair
-    const existingMembership = await prisma.pairMember.findFirst({
-      where: { userId: session.user.id }
-    })
-
-    if (existingMembership) {
-      return NextResponse.json(
-        { message: 'You are already in a pair' },
-        { status: 400 }
-      )
-    }
-
     // Find the invite
     const invite = await prisma.invite.findUnique({
       where: { code },
@@ -73,6 +61,23 @@ export async function POST(request: NextRequest) {
     if (!invite.pair) {
       return NextResponse.json(
         { message: 'Invalid invite - no pair found' },
+        { status: 400 }
+      )
+    }
+
+    // Check if user is already in this specific pair
+    const existingMembership = await prisma.pairMember.findUnique({
+      where: {
+        userId_pairId: {
+          userId: session.user.id,
+          pairId: invite.pair.id
+        }
+      }
+    })
+
+    if (existingMembership) {
+      return NextResponse.json(
+        { message: 'You are already a member of this list' },
         { status: 400 }
       )
     }

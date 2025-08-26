@@ -1,19 +1,25 @@
 'use client'
 
-import { Heart, Plus, UserPlus } from 'lucide-react'
+import { Heart, Plus, UserPlus, Settings } from 'lucide-react'
 import { Button } from './ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
 
 interface EmptyStateProps {
   onCreateInvite: () => void
   onAcceptInvite: () => void
+  onSettings: () => void
 }
 
-export function EmptyState({ onCreateInvite, onAcceptInvite }: EmptyStateProps) {
+export function EmptyState({ onCreateInvite, onAcceptInvite, onSettings }: EmptyStateProps) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <Card className="w-full max-w-md text-center">
         <CardHeader>
+          <div className="flex justify-end mb-2">
+            <Button variant="ghost" size="icon" onClick={onSettings}>
+              <Settings className="h-4 w-4" />
+            </Button>
+          </div>
           <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
             <Heart className="h-10 w-10 text-primary" />
           </div>

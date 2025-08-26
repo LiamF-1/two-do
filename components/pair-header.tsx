@@ -6,16 +6,19 @@ import { Button } from './ui/button'
 import { Card, CardContent } from './ui/card'
 import { useState } from 'react'
 import { CreateItemDialog } from './create-item-dialog'
+import { UserSettingsDialog } from './user-settings-dialog'
 
 interface PairHeaderProps {
   user: User
   partner: { id: string; name: string | null; email: string } | null
   itemCount: number
   completedCount: number
+  pairName?: string
 }
 
-export function PairHeader({ user, partner, itemCount, completedCount }: PairHeaderProps) {
+export function PairHeader({ user, partner, itemCount, completedCount, pairName }: PairHeaderProps) {
   const [showCreateItem, setShowCreateItem] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
 
   return (
     <>
@@ -28,14 +31,14 @@ export function PairHeader({ user, partner, itemCount, completedCount }: PairHea
               </div>
               <div>
                 <h1 className="text-xl font-semibold">
-                  {user.name} & {partner?.name || 'Partner'}
+                  {pairName || 'Bucket List'}
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                  Shared Bucket List
+                  {user.name} & {partner?.name || 'Partner'}
                 </p>
               </div>
             </div>
-            <Button variant="outline" size="icon">
+            <Button variant="outline" size="icon" onClick={() => setShowSettings(true)}>
               <Settings className="w-4 h-4" />
             </Button>
           </div>
@@ -67,6 +70,12 @@ export function PairHeader({ user, partner, itemCount, completedCount }: PairHea
       <CreateItemDialog
         open={showCreateItem}
         onOpenChange={setShowCreateItem}
+      />
+      
+      <UserSettingsDialog
+        open={showSettings}
+        onOpenChange={setShowSettings}
+        user={user}
       />
     </>
   )

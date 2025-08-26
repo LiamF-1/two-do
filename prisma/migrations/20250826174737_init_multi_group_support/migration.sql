@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "twodo"."User" (
+CREATE TABLE "public"."User" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "passwordHash" TEXT NOT NULL,
@@ -11,8 +11,9 @@ CREATE TABLE "twodo"."User" (
 );
 
 -- CreateTable
-CREATE TABLE "twodo"."Pair" (
+CREATE TABLE "public"."Pair" (
     "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL DEFAULT 'Bucket List',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -20,7 +21,7 @@ CREATE TABLE "twodo"."Pair" (
 );
 
 -- CreateTable
-CREATE TABLE "twodo"."PairMember" (
+CREATE TABLE "public"."PairMember" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "pairId" TEXT NOT NULL,
@@ -30,7 +31,7 @@ CREATE TABLE "twodo"."PairMember" (
 );
 
 -- CreateTable
-CREATE TABLE "twodo"."Invite" (
+CREATE TABLE "public"."Invite" (
     "id" TEXT NOT NULL,
     "code" TEXT NOT NULL,
     "creatorId" TEXT NOT NULL,
@@ -43,7 +44,7 @@ CREATE TABLE "twodo"."Invite" (
 );
 
 -- CreateTable
-CREATE TABLE "twodo"."Item" (
+CREATE TABLE "public"."Item" (
     "id" TEXT NOT NULL,
     "pairId" TEXT NOT NULL,
     "title" TEXT NOT NULL,
@@ -58,7 +59,7 @@ CREATE TABLE "twodo"."Item" (
 );
 
 -- CreateTable
-CREATE TABLE "twodo"."Completion" (
+CREATE TABLE "public"."Completion" (
     "id" TEXT NOT NULL,
     "itemId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
@@ -70,37 +71,37 @@ CREATE TABLE "twodo"."Completion" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "twodo"."User"("email");
+CREATE UNIQUE INDEX "User_email_key" ON "public"."User"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "PairMember_userId_pairId_key" ON "twodo"."PairMember"("userId", "pairId");
+CREATE UNIQUE INDEX "PairMember_userId_pairId_key" ON "public"."PairMember"("userId", "pairId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Invite_code_key" ON "twodo"."Invite"("code");
+CREATE UNIQUE INDEX "Invite_code_key" ON "public"."Invite"("code");
 
 -- CreateIndex
-CREATE INDEX "Item_pairId_position_idx" ON "twodo"."Item"("pairId", "position");
+CREATE INDEX "Item_pairId_position_idx" ON "public"."Item"("pairId", "position");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Completion_itemId_key" ON "twodo"."Completion"("itemId");
+CREATE UNIQUE INDEX "Completion_itemId_key" ON "public"."Completion"("itemId");
 
 -- AddForeignKey
-ALTER TABLE "twodo"."PairMember" ADD CONSTRAINT "PairMember_userId_fkey" FOREIGN KEY ("userId") REFERENCES "twodo"."User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "public"."PairMember" ADD CONSTRAINT "PairMember_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "twodo"."PairMember" ADD CONSTRAINT "PairMember_pairId_fkey" FOREIGN KEY ("pairId") REFERENCES "twodo"."Pair"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "public"."PairMember" ADD CONSTRAINT "PairMember_pairId_fkey" FOREIGN KEY ("pairId") REFERENCES "public"."Pair"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "twodo"."Invite" ADD CONSTRAINT "Invite_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "twodo"."User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "public"."Invite" ADD CONSTRAINT "Invite_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "public"."User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "twodo"."Invite" ADD CONSTRAINT "Invite_pairId_fkey" FOREIGN KEY ("pairId") REFERENCES "twodo"."Pair"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "public"."Invite" ADD CONSTRAINT "Invite_pairId_fkey" FOREIGN KEY ("pairId") REFERENCES "public"."Pair"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "twodo"."Item" ADD CONSTRAINT "Item_pairId_fkey" FOREIGN KEY ("pairId") REFERENCES "twodo"."Pair"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "public"."Item" ADD CONSTRAINT "Item_pairId_fkey" FOREIGN KEY ("pairId") REFERENCES "public"."Pair"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "twodo"."Completion" ADD CONSTRAINT "Completion_itemId_fkey" FOREIGN KEY ("itemId") REFERENCES "twodo"."Item"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "public"."Completion" ADD CONSTRAINT "Completion_itemId_fkey" FOREIGN KEY ("itemId") REFERENCES "public"."Item"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "twodo"."Completion" ADD CONSTRAINT "Completion_userId_fkey" FOREIGN KEY ("userId") REFERENCES "twodo"."User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "public"."Completion" ADD CONSTRAINT "Completion_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

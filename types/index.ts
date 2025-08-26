@@ -31,10 +31,16 @@ export interface Completion {
 
 export interface Pair {
   id: string
+  name: string
   members: Array<{
     user: User
   }>
   items: Item[]
+}
+
+export interface PairMembership {
+  id: string
+  pair: Pair
 }
 
 export interface Invite {

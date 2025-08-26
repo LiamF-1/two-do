@@ -20,6 +20,8 @@ const nextConfig = {
       }
     ],
     formats: ['image/webp', 'image/avif'],
+    unoptimized: false,
+    loader: 'default',
   },
   async headers() {
     return [

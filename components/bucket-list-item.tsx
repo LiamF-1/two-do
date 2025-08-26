@@ -9,7 +9,8 @@ import {
   Edit, 
   Trash2, 
   Check,
-  MoreHorizontal 
+  MoreHorizontal,
+  ZoomIn
 } from 'lucide-react'
 import { Card, CardContent } from './ui/card'
 import { Button } from './ui/button'
@@ -24,8 +25,9 @@ import { formatDate, formatRelativeTime } from '@/lib/utils'
 import { EditItemDialog } from './edit-item-dialog'
 import { CompleteItemDialog } from './complete-item-dialog'
 import { DeleteItemDialog } from './delete-item-dialog'
+import { ImageViewerDialog } from './image-viewer-dialog'
+import { SafeImage } from './safe-image'
 import { Item } from '@/types'
-import Image from 'next/image'
 
 interface BucketListItemProps {
   item: Item
@@ -45,6 +47,7 @@ export function BucketListItem({
   const [showEdit, setShowEdit] = useState(false)
   const [showComplete, setShowComplete] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
+  const [showImageViewer, setShowImageViewer] = useState(false)
 
   const isCompleted = !!item.completedAt
   const isOverdue = item.dueDate && new Date(item.dueDate) < new Date() && !isCompleted
@@ -125,13 +128,20 @@ export function BucketListItem({
               {item.completion && (
                 <div className="mt-4 p-3 bg-muted rounded-lg">
                   <div className="flex items-start space-x-3">
-                    <div className="relative w-16 h-16 rounded-md overflow-hidden bg-muted flex-shrink-0">
-                      <Image
+                    <div 
+                      className="relative w-16 h-16 rounded-md overflow-hidden bg-muted flex-shrink-0 cursor-pointer hover:ring-2 hover:ring-primary transition-all group"
+                      onClick={() => setShowImageViewer(true)}
+                      title="Click to view full image"
+                    >
+                      <SafeImage
                         src={item.completion.photoPath}
                         alt="Completion photo"
                         fill
                         className="object-cover"
                       />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                        <ZoomIn className="w-4 h-4 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium">
@@ -172,6 +182,18 @@ export function BucketListItem({
         onOpenChange={setShowDelete}
         onDelete={onDelete}
       />
+      
+      {item.completion && (
+        <ImageViewerDialog
+          open={showImageViewer}
+          onOpenChange={setShowImageViewer}
+          src={item.completion.photoPath}
+          alt={`Completion photo for ${item.title}`}
+          caption={item.completion.caption}
+          completedBy={item.completion.user.name}
+          completedAt={item.completion.createdAt}
+        />
+      )}
     </>
   )
 }

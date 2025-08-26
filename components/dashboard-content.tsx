@@ -7,6 +7,7 @@ import { BucketList } from './bucket-list'
 import { EmptyState } from './empty-state'
 import { CreateInviteDialog } from './create-invite-dialog'
 import { AcceptInviteDialog } from './accept-invite-dialog'
+import { UserSettingsDialog } from './user-settings-dialog'
 import { Pair } from '@/types'
 
 interface DashboardContentProps {
@@ -17,6 +18,7 @@ interface DashboardContentProps {
 export function DashboardContent({ pair, user }: DashboardContentProps) {
   const [showCreateInvite, setShowCreateInvite] = useState(false)
   const [showAcceptInvite, setShowAcceptInvite] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
 
   if (!pair) {
     return (
@@ -24,6 +26,7 @@ export function DashboardContent({ pair, user }: DashboardContentProps) {
         <EmptyState
           onCreateInvite={() => setShowCreateInvite(true)}
           onAcceptInvite={() => setShowAcceptInvite(true)}
+          onSettings={() => setShowSettings(true)}
         />
         <CreateInviteDialog
           open={showCreateInvite}
@@ -32,6 +35,11 @@ export function DashboardContent({ pair, user }: DashboardContentProps) {
         <AcceptInviteDialog
           open={showAcceptInvite}
           onOpenChange={setShowAcceptInvite}
+        />
+        <UserSettingsDialog
+          open={showSettings}
+          onOpenChange={setShowSettings}
+          user={user}
         />
       </>
     )

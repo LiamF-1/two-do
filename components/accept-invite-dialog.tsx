@@ -46,7 +46,7 @@ export function AcceptInviteDialog({ open, onOpenChange }: AcceptInviteDialogPro
       if (response.ok) {
         toast({
           title: 'Success!',
-          description: 'You have successfully joined the pair!',
+          description: 'You have successfully joined the list!',
         })
         onOpenChange(false)
         router.refresh()
@@ -78,9 +78,9 @@ export function AcceptInviteDialog({ open, onOpenChange }: AcceptInviteDialogPro
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Join a Pair</DialogTitle>
+          <DialogTitle>Join a List</DialogTitle>
           <DialogDescription>
-            Enter the invite code your partner shared with you
+            Enter the invite code someone shared with you
           </DialogDescription>
         </DialogHeader>
         
@@ -102,12 +102,12 @@ export function AcceptInviteDialog({ open, onOpenChange }: AcceptInviteDialogPro
               Cancel
             </Button>
             <Button onClick={acceptInvite} disabled={isLoading} className="flex-1">
-              {isLoading ? 'Joining...' : 'Join Pair'}
+              {isLoading ? 'Joining...' : 'Join List'}
             </Button>
           </div>
           
           <p className="text-xs text-muted-foreground">
-            Make sure you have the correct 6-character code from your partner
+            Make sure you have the correct 6-character code
           </p>
         </div>
       </DialogContent>

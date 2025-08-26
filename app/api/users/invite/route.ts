@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
+import { z } from 'zod'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { generateInviteCode } from '@/lib/utils'
+
+const createInviteSchema = z.object({
+  name: z.string().min(1).max(50).optional()
+})
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,17 +16,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
     }
 
-    // Check if user is already in a pair
-    const existingMembership = await prisma.pairMember.findFirst({
-      where: { userId: session.user.id }
-    })
-
-    if (existingMembership) {
-      return NextResponse.json(
-        { message: 'You are already in a pair' },
-        { status: 400 }
-      )
-    }
+    const body = await request.json()
+    const { name } = createInviteSchema.parse(body)
 
     // Create new pair and invite
     const code = generateInviteCode()
@@ -29,6 +25,7 @@ export async function POST(request: NextRequest) {
 
     const pair = await prisma.pair.create({
       data: {
+        name: name || 'Bucket List',
         members: {
           create: {
             userId: session.user.id,

@@ -33,13 +33,25 @@ async function main() {
     },
   })
 
-  // Create a pair
-  const pair = await prisma.pair.create({
+  // Create pairs
+  const pair1 = await prisma.pair.create({
     data: {
+      name: 'Travel Adventures',
       members: {
         create: [
           { userId: user1.id, role: 'member' },
           { userId: user2.id, role: 'member' },
+        ],
+      },
+    },
+  })
+
+  const pair2 = await prisma.pair.create({
+    data: {
+      name: 'Food Experiences',
+      members: {
+        create: [
+          { userId: user1.id, role: 'member' },
         ],
       },
     },
@@ -94,14 +106,42 @@ async function main() {
     await prisma.item.create({
       data: {
         ...item,
-        pairId: pair.id,
+        pairId: pair1.id,
+      },
+    })
+  }
+
+  // Create items for the second pair
+  const foodItems = [
+    {
+      title: 'Try authentic ramen in Tokyo',
+      notes: 'Visit a traditional ramen shop',
+      position: 0,
+    },
+    {
+      title: 'Learn to make homemade pasta',
+      notes: 'Take a cooking class or follow a tutorial',
+      position: 1,
+    },
+    {
+      title: 'Eat at a Michelin-starred restaurant',
+      notes: 'Save up for a special dining experience',
+      position: 2,
+    },
+  ]
+
+  for (const item of foodItems) {
+    await prisma.item.create({
+      data: {
+        ...item,
+        pairId: pair2.id,
       },
     })
   }
 
   // Complete one item as an example
   const completedItem = await prisma.item.findFirst({
-    where: { pairId: pair.id, title: 'Go on a digital detox weekend' },
+    where: { pairId: pair1.id, title: 'Go on a digital detox weekend' },
   })
 
   if (completedItem) {

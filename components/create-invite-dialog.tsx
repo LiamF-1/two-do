@@ -20,6 +20,7 @@ interface CreateInviteDialogProps {
 }
 
 export function CreateInviteDialog({ open, onOpenChange }: CreateInviteDialogProps) {
+  const [listName, setListName] = useState('')
   const [inviteCode, setInviteCode] = useState<string | null>(null)
   const [inviteUrl, setInviteUrl] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -33,6 +34,7 @@ export function CreateInviteDialog({ open, onOpenChange }: CreateInviteDialogPro
       const response = await fetch('/api/users/invite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: listName || undefined }),
       })
 
       if (response.ok) {
@@ -72,6 +74,7 @@ export function CreateInviteDialog({ open, onOpenChange }: CreateInviteDialogPro
   }
 
   const handleClose = () => {
+    setListName('')
     setInviteCode(null)
     setInviteUrl(null)
     setCopied(null)
@@ -81,7 +84,6 @@ export function CreateInviteDialog({ open, onOpenChange }: CreateInviteDialogPro
   const goToDashboard = () => {
     handleClose()
     router.refresh() // Refresh to get the new pair data
-    router.push('/')
   }
 
   return (
@@ -96,8 +98,17 @@ export function CreateInviteDialog({ open, onOpenChange }: CreateInviteDialogPro
         
         {!inviteCode ? (
           <div className="flex flex-col space-y-4">
+            <div>
+              <label className="text-sm font-medium">List Name (Optional)</label>
+              <Input
+                value={listName}
+                onChange={(e) => setListName(e.target.value)}
+                placeholder="My Bucket List"
+                className="mt-1"
+              />
+            </div>
             <p className="text-sm text-muted-foreground">
-              Click the button below to generate a unique invite that your partner can use to join your bucket list.
+              Click the button below to generate a unique invite that others can use to join your bucket list.
             </p>
             <Button onClick={createInvite} disabled={isLoading}>
               {isLoading ? 'Creating...' : 'Generate Invite'}
@@ -146,12 +157,8 @@ export function CreateInviteDialog({ open, onOpenChange }: CreateInviteDialogPro
             </p>
             
             <div className="flex space-x-2 pt-2">
-              <Button variant="outline" onClick={handleClose} className="flex-1">
-                Stay Here
-              </Button>
-              <Button onClick={goToDashboard} className="flex-1">
-                Go to Dashboard
-                <ArrowRight className="ml-2 h-4 w-4" />
+              <Button onClick={handleClose} className="flex-1">
+                Close
               </Button>
             </div>
           </div>
