@@ -8,7 +8,6 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  schemas  = ["twodo"]
 }
 
 model User {
@@ -24,7 +23,7 @@ model User {
   completions   Completion[]
   invites       Invite[]
   
-  @@schema("twodo")
+
 }
 
 model Pair {
@@ -37,7 +36,7 @@ model Pair {
   items       Item[]
   invites     Invite[]
   
-  @@schema("twodo")
+
 }
 
 model PairMember {
@@ -51,7 +50,7 @@ model PairMember {
   pair      Pair    @relation(fields: [pairId], references: [id], onDelete: Cascade)
   
   @@unique([userId, pairId])
-  @@schema("twodo")
+
 }
 
 model Invite {
@@ -67,7 +66,7 @@ model Invite {
   creator   User     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   pair      Pair?    @relation(fields: [pairId], references: [id], onDelete: Cascade)
   
-  @@schema("twodo")
+
 }
 
 model Item {
@@ -86,7 +85,7 @@ model Item {
   completion  Completion?
   
   @@index([pairId, position])
-  @@schema("twodo")
+
 }
 
 model Completion {
@@ -101,5 +100,5 @@ model Completion {
   item        Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  @@schema("twodo")
+
 }
