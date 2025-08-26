@@ -100,13 +100,22 @@ export function ImageViewerDialog({
   }
 
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date)
+    if (!date || isNaN(date.getTime())) {
+      return 'Unknown date'
+    }
+    
+    try {
+      return new Intl.DateTimeFormat('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }).format(date)
+    } catch (error) {
+      console.error('Date formatting error:', error)
+      return 'Invalid date'
+    }
   }
 
   return (

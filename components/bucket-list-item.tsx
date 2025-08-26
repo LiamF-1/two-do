@@ -9,6 +9,7 @@ import {
   Edit, 
   Trash2, 
   Check,
+  CheckCircle2,
   MoreHorizontal,
   ZoomIn
 } from 'lucide-react'
@@ -54,82 +55,100 @@ export function BucketListItem({
 
   return (
     <>
-      <Card className={`transition-all ${isCompleted ? 'opacity-75 bg-green-50 dark:bg-green-950/20' : ''}`}>
-        <CardContent className="p-4">
-          <div className="flex items-start space-x-3">
+      <Card className={`group relative overflow-hidden transition-all duration-300 shadow-soft hover:shadow-glow border-2 ${
+        isCompleted 
+          ? 'bg-gradient-to-br from-green-50 via-emerald-50 to-green-50 dark:from-green-950/20 dark:via-emerald-950/20 dark:to-green-950/20 border-green-200 hover:border-green-300' 
+          : 'bg-gradient-to-br from-card via-card to-card/80 hover:from-primary/5 hover:via-card hover:to-primary/5 border-border hover:border-primary/30'
+      }`}>
+        {isCompleted && (
+          <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-green-500/20 to-transparent" />
+        )}
+        <CardContent className="p-6">
+          <div className="flex items-start gap-4">
             <div
               {...dragHandleProps}
-              className="mt-1 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground"
+              className="mt-1 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-primary transition-colors p-1 rounded-md hover:bg-primary/10"
             >
               <GripVertical className="w-4 h-4" />
             </div>
             
-            <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <h3 className={`font-medium ${isCompleted ? 'line-through text-muted-foreground' : ''}`}>
+            <div className="flex-1 min-w-0 space-y-3">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 space-y-2">
+                  <h3 className={`text-lg font-semibold leading-tight ${
+                    isCompleted ? 'line-through text-muted-foreground' : 'text-foreground group-hover:text-primary transition-colors'
+                  }`}>
                     {item.title}
                   </h3>
                   {item.notes && (
-                    <p className={`text-sm mt-1 ${isCompleted ? 'line-through text-muted-foreground' : 'text-muted-foreground'}`}>
+                    <p className={`text-sm leading-relaxed ${
+                      isCompleted ? 'line-through text-muted-foreground' : 'text-muted-foreground'
+                    }`}>
                       {item.notes}
                     </p>
                   )}
                 </div>
                 
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <MoreHorizontal className="w-4 h-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    {!isCompleted && (
-                      <DropdownMenuItem onClick={() => setShowComplete(true)}>
-                        <Camera className="w-4 h-4 mr-2" />
-                        Complete
-                      </DropdownMenuItem>
-                    )}
-                    <DropdownMenuItem onClick={() => setShowEdit(true)}>
-                      <Edit className="w-4 h-4 mr-2" />
-                      Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => setShowDelete(true)}
-                      className="text-destructive"
+                <div className="flex items-center gap-2">
+                  {!isCompleted && (
+                    <Button
+                      onClick={() => setShowComplete(true)}
+                      size="sm"
+                      className="shadow-soft hover:shadow-glow transition-all duration-200"
                     >
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                      <Camera className="w-4 h-4 mr-1" />
+                      Complete
+                    </Button>
+                  )}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-primary/10">
+                        <MoreHorizontal className="w-4 h-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="shadow-glow">
+                      <DropdownMenuItem onClick={() => setShowEdit(true)}>
+                        <Edit className="w-4 h-4 mr-2" />
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => setShowDelete(true)}
+                        className="text-destructive focus:text-destructive"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </div>
               
-              <div className="flex items-center flex-wrap gap-2 mt-3">
+              <div className="flex items-center flex-wrap gap-3">
                 {isCompleted && (
-                  <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
-                    <Check className="w-3 h-3 mr-1" />
+                  <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-soft">
+                    <CheckCircle2 className="w-3 h-3 mr-1" />
                     Completed
                   </Badge>
                 )}
                 
                 {item.dueDate && (
-                  <Badge variant={isOverdue ? "destructive" : "outline"}>
+                  <Badge variant={isOverdue ? "destructive" : "outline"} className="shadow-soft">
                     <Calendar className="w-3 h-3 mr-1" />
                     {formatDate(item.dueDate)}
                   </Badge>
                 )}
                 
-                <span className="text-xs text-muted-foreground">
-                  Added {formatRelativeTime(item.createdAt)}
-                </span>
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <div className="w-1 h-1 rounded-full bg-muted-foreground/50" />
+                  <span>Added {formatRelativeTime(item.createdAt)}</span>
+                </div>
               </div>
               
               {item.completion && (
-                <div className="mt-4 p-3 bg-muted rounded-lg">
-                  <div className="flex items-start space-x-3">
+                <div className="mt-6 p-4 bg-gradient-to-br from-green-50 via-emerald-50 to-green-50 dark:from-green-950/20 dark:via-emerald-950/20 dark:to-green-950/20 rounded-xl border border-green-200/50 dark:border-green-800/30 shadow-soft">
+                  <div className="flex items-start gap-4">
                     <div 
-                      className="relative w-16 h-16 rounded-md overflow-hidden bg-muted flex-shrink-0 cursor-pointer hover:ring-2 hover:ring-primary transition-all group"
+                      className="relative w-20 h-20 rounded-xl overflow-hidden bg-muted flex-shrink-0 cursor-pointer hover:ring-2 hover:ring-green-500 transition-all duration-200 group shadow-soft"
                       onClick={() => setShowImageViewer(true)}
                       title="Click to view full image"
                     >
@@ -140,18 +159,23 @@ export function BucketListItem({
                         className="object-cover"
                       />
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
-                        <ZoomIn className="w-4 h-4 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <ZoomIn className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium">
-                        Completed by {item.completion.user.name}
-                      </p>
+                    <div className="flex-1 min-w-0 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-green-500" />
+                        <p className="text-sm font-semibold text-green-700 dark:text-green-400">
+                          Completed by {item.completion.user.name}
+                        </p>
+                      </div>
                       <p className="text-xs text-muted-foreground">
                         {formatRelativeTime(item.completion.createdAt)}
                       </p>
                       {item.completion.caption && (
-                        <p className="text-sm mt-1">{item.completion.caption}</p>
+                        <p className="text-sm text-foreground bg-white/50 dark:bg-black/20 p-2 rounded-lg border border-green-200/30 dark:border-green-800/30">
+                          "{item.completion.caption}"
+                        </p>
                       )}
                     </div>
                   </div>
@@ -191,7 +215,7 @@ export function BucketListItem({
           alt={`Completion photo for ${item.title}`}
           caption={item.completion.caption}
           completedBy={item.completion.user.name}
-          completedAt={item.completion.createdAt}
+          completedAt={new Date(item.completion.createdAt)}
         />
       )}
     </>

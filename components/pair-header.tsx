@@ -1,9 +1,10 @@
 'use client'
 
 import { User } from 'next-auth'
-import { Heart, Settings, Plus } from 'lucide-react'
+import { Heart, Settings, Plus, Users, Target, Trophy, Clock } from 'lucide-react'
 import { Button } from './ui/button'
 import { Card, CardContent } from './ui/card'
+import { Badge } from './ui/badge'
 import { useState } from 'react'
 import { CreateItemDialog } from './create-item-dialog'
 import { UserSettingsDialog } from './user-settings-dialog'
@@ -20,49 +21,88 @@ export function PairHeader({ user, partner, itemCount, completedCount, pairName 
   const [showCreateItem, setShowCreateItem] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
 
+  const progress = itemCount > 0 ? (completedCount / itemCount) * 100 : 0
+
   return (
     <>
-      <Card className="mb-6">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-3">
-              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
-                <Heart className="w-5 h-5 text-primary" />
+      <Card className="relative overflow-hidden shadow-soft border-0 bg-gradient-to-br from-card via-card to-card/80">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10" />
+        <CardContent className="p-8 relative z-10">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-glow">
+                    <Heart className="w-8 h-8 text-primary-foreground" />
+                  </div>
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full border-2 border-background" />
+                </div>
+                <div className="space-y-1">
+                  <h1 className="text-3xl font-bold text-gradient">
+                    {pairName || 'Adventure List'}
+                  </h1>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Users className="w-4 h-4" />
+                    <span>{user.name} & {partner?.name || 'Partner'}</span>
+                  </div>
+                </div>
               </div>
-              <div>
-                <h1 className="text-xl font-semibold">
-                  {pairName || 'Bucket List'}
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                  {user.name} & {partner?.name || 'Partner'}
-                </p>
-              </div>
-            </div>
-            <Button variant="outline" size="icon" onClick={() => setShowSettings(true)}>
-              <Settings className="w-4 h-4" />
-            </Button>
-          </div>
-          
-          <div className="flex items-center justify-between">
-            <div className="flex space-x-6 text-sm">
-              <div>
-                <span className="text-2xl font-bold">{itemCount}</span>
-                <p className="text-muted-foreground">Total Items</p>
-              </div>
-              <div>
-                <span className="text-2xl font-bold text-green-500">{completedCount}</span>
-                <p className="text-muted-foreground">Completed</p>
-              </div>
-              <div>
-                <span className="text-2xl font-bold">{itemCount - completedCount}</span>
-                <p className="text-muted-foreground">Remaining</p>
+              
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Progress:</span>
+                <div className="flex-1 max-w-xs bg-secondary rounded-full h-3 overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-green-500 to-emerald-600 transition-all duration-500 ease-out"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+                <span className="text-sm font-medium">{Math.round(progress)}%</span>
               </div>
             </div>
             
-            <Button onClick={() => setShowCreateItem(true)}>
-              <Plus className="w-4 h-4 mr-2" />
-              Add Item
-            </Button>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <div className="grid grid-cols-3 gap-6 text-center">
+                <div className="space-y-1">
+                  <div className="flex items-center justify-center gap-1">
+                    <Target className="w-4 h-4 text-primary" />
+                    <span className="text-2xl font-bold text-primary">{itemCount}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground font-medium">Total</p>
+                </div>
+                <div className="space-y-1">
+                  <div className="flex items-center justify-center gap-1">
+                    <Trophy className="w-4 h-4 text-green-600" />
+                    <span className="text-2xl font-bold text-green-600">{completedCount}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground font-medium">Done</p>
+                </div>
+                <div className="space-y-1">
+                  <div className="flex items-center justify-center gap-1">
+                    <Clock className="w-4 h-4 text-amber-600" />
+                    <span className="text-2xl font-bold text-amber-600">{itemCount - completedCount}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground font-medium">Left</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <Button 
+                  onClick={() => setShowCreateItem(true)}
+                  className="shadow-soft hover:shadow-glow transition-all duration-200"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Adventure
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  onClick={() => setShowSettings(true)}
+                  className="shadow-soft hover:shadow-glow transition-all duration-200"
+                >
+                  <Settings className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>

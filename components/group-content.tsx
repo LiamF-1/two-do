@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { User } from 'next-auth'
-import { Home } from 'lucide-react'
+import { Home, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from './ui/button'
 import { PairHeader } from './pair-header'
@@ -18,33 +18,37 @@ export function GroupContent({ pair, user }: GroupContentProps) {
   const partner = pair.members.find(member => member.user.id !== user.id)
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-4xl">
-      {/* Home Button */}
-      <div className="mb-6">
-        <Link href="/home">
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-2"
-          >
-            <Home className="h-4 w-4" />
-            Home
-          </Button>
-        </Link>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+      <div className="container-fluid max-w-6xl mx-auto py-8 space-y-8">
+        {/* Navigation */}
+        <div className="flex items-center justify-between">
+          <Link href="/home">
+            <Button
+              variant="outline"
+              className="shadow-soft hover:shadow-glow transition-all duration-200"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Adventures
+            </Button>
+          </Link>
+        </div>
 
-      <PairHeader
-        user={user}
-        partner={partner?.user || null}
-        itemCount={pair.items.length}
-        completedCount={pair.items.filter(item => item.completedAt).length}
-        pairName={pair.name}
-      />
-      <BucketList
-        items={pair.items}
-        pairId={pair.id}
-        currentUserId={user.id}
-      />
+        <PairHeader
+          user={user}
+          partner={partner?.user || null}
+          itemCount={pair.items.length}
+          completedCount={pair.items.filter(item => item.completedAt).length}
+          pairName={pair.name}
+        />
+        
+        <div className="animate-slide-up">
+          <BucketList
+            items={pair.items}
+            pairId={pair.id}
+            currentUserId={user.id}
+          />
+        </div>
+      </div>
     </div>
   )
 }

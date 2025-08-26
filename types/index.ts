@@ -43,6 +43,21 @@ export interface PairMembership {
   pair: Pair
 }
 
+export interface HomePairMembership {
+  id: string
+  pair: {
+    id: string
+    name: string
+    members: Array<{
+      user: User
+    }>
+    items: Array<{
+      id: string
+      completedAt: Date | null
+    }>
+  }
+}
+
 export interface Invite {
   id: string
   code: string

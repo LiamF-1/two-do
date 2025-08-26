@@ -40,7 +40,9 @@ async function getUserPairs(userId: string) {
   return memberships.map(membership => ({
     id: membership.id,
     pair: {
-      ...membership.pair,
+      id: membership.pair.id,
+      name: membership.pair.name,
+      members: membership.pair.members,
       items: membership.pair.items
     }
   }))
