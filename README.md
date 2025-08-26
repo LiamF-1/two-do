@@ -101,7 +101,7 @@ DATABASE_URL="your-production-database-url"
 #### DigitalOcean Database Example
 
 ```env
-DATABASE_URL="postgresql://doadmin:password@db-postgresql-nyc3-12345-do-user-67890-0.db.ondigitalocean.com:25060/twodo_prod?sslmode=require"
+DATABASE_URL="postgresql://doadmin:password@db-postgresql-nyc3-12345-do-user-67890-0.db.ondigitalocean.com:25060/mindline-db?sslmode=require&schema=twodo"
 ```
 
 ## Usage

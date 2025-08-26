@@ -16,6 +16,7 @@ import { Input } from './ui/input'
 import { Label } from './ui/label'
 import { Textarea } from './ui/textarea'
 import { useToast } from './ui/use-toast'
+import { Item } from '@/types'
 
 const editItemSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200, 'Title too long'),
@@ -24,14 +25,6 @@ const editItemSchema = z.object({
 })
 
 type EditItemForm = z.infer<typeof editItemSchema>
-
-interface Item {
-  id: string
-  title: string
-  notes: string | null
-  dueDate: Date | null
-  [key: string]: any
-}
 
 interface EditItemDialogProps {
   item: Item

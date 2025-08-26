@@ -18,18 +18,13 @@ import { Textarea } from './ui/textarea'
 import { useToast } from './ui/use-toast'
 import { CameraCapture } from './camera-capture'
 import { ImageUploader } from './image-uploader'
+import { Item } from '@/types'
 
 const completeItemSchema = z.object({
   caption: z.string().max(500, 'Caption too long').optional(),
 })
 
 type CompleteItemForm = z.infer<typeof completeItemSchema>
-
-interface Item {
-  id: string
-  title: string
-  [key: string]: any
-}
 
 interface CompleteItemDialogProps {
   item: Item

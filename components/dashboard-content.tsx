@@ -7,36 +7,7 @@ import { BucketList } from './bucket-list'
 import { EmptyState } from './empty-state'
 import { CreateInviteDialog } from './create-invite-dialog'
 import { AcceptInviteDialog } from './accept-invite-dialog'
-
-interface Pair {
-  id: string
-  members: Array<{
-    user: {
-      id: string
-      name: string | null
-      email: string
-    }
-  }>
-  items: Array<{
-    id: string
-    title: string
-    notes: string | null
-    position: number
-    dueDate: Date | null
-    createdAt: Date
-    completedAt: Date | null
-    completion?: {
-      id: string
-      photoPath: string
-      caption: string | null
-      createdAt: Date
-      user: {
-        id: string
-        name: string | null
-      }
-    } | null
-  }>
-}
+import { Pair } from '@/types'
 
 interface DashboardContentProps {
   pair: Pair | null

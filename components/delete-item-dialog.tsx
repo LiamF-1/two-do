@@ -10,12 +10,7 @@ import {
 } from './ui/dialog'
 import { Button } from './ui/button'
 import { useToast } from './ui/use-toast'
-
-interface Item {
-  id: string
-  title: string
-  [key: string]: any
-}
+import { Item } from '@/types'
 
 interface DeleteItemDialogProps {
   item: Item

@@ -24,27 +24,8 @@ import { formatDate, formatRelativeTime } from '@/lib/utils'
 import { EditItemDialog } from './edit-item-dialog'
 import { CompleteItemDialog } from './complete-item-dialog'
 import { DeleteItemDialog } from './delete-item-dialog'
+import { Item } from '@/types'
 import Image from 'next/image'
-
-interface Item {
-  id: string
-  title: string
-  notes: string | null
-  position: number
-  dueDate: Date | null
-  createdAt: Date
-  completedAt: Date | null
-  completion?: {
-    id: string
-    photoPath: string
-    caption: string | null
-    createdAt: Date
-    user: {
-      id: string
-      name: string | null
-    }
-  } | null
-}
 
 interface BucketListItemProps {
   item: Item
