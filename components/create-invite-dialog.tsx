@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Copy, Check } from 'lucide-react'
+import { Copy, Check, ArrowRight } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import {
   Dialog,
   DialogContent,
@@ -24,6 +25,7 @@ export function CreateInviteDialog({ open, onOpenChange }: CreateInviteDialogPro
   const [isLoading, setIsLoading] = useState(false)
   const [copied, setCopied] = useState<'code' | 'url' | null>(null)
   const { toast } = useToast()
+  const router = useRouter()
 
   const createInvite = async () => {
     setIsLoading(true)
@@ -74,6 +76,12 @@ export function CreateInviteDialog({ open, onOpenChange }: CreateInviteDialogPro
     setInviteUrl(null)
     setCopied(null)
     onOpenChange(false)
+  }
+
+  const goToDashboard = () => {
+    handleClose()
+    router.refresh() // Refresh to get the new pair data
+    router.push('/')
   }
 
   return (
@@ -136,6 +144,16 @@ export function CreateInviteDialog({ open, onOpenChange }: CreateInviteDialogPro
             <p className="text-xs text-muted-foreground">
               Share either the code or link with your partner. The invite expires in 7 days.
             </p>
+            
+            <div className="flex space-x-2 pt-2">
+              <Button variant="outline" onClick={handleClose} className="flex-1">
+                Stay Here
+              </Button>
+              <Button onClick={goToDashboard} className="flex-1">
+                Go to Dashboard
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
           </div>
         )}
       </DialogContent>

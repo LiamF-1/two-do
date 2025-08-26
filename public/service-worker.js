@@ -1,7 +1,7 @@
-const CACHE_NAME = 'two-do-v1'
-const STATIC_CACHE = 'two-do-static-v1'
-const DYNAMIC_CACHE = 'two-do-dynamic-v1'
-const IMAGE_CACHE = 'two-do-images-v1'
+const CACHE_NAME = 'two-do-v2'
+const STATIC_CACHE = 'two-do-static-v2'
+const DYNAMIC_CACHE = 'two-do-dynamic-v2'
+const IMAGE_CACHE = 'two-do-images-v2'
 
 // Files to cache immediately
 const STATIC_FILES = [
@@ -56,10 +56,10 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
-  // Handle API requests
+  // Handle API requests - always fetch fresh data
   if (url.pathname.startsWith('/api/')) {
     event.respondWith(
-      fetch(request).catch(() => {
+      fetch(request, { cache: 'no-cache' }).catch(() => {
         // Return offline message for API failures
         return new Response(
           JSON.stringify({ message: 'Offline - please try again when connected' }),
@@ -97,28 +97,23 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
-  // Handle navigation requests (pages)
+  // Handle navigation requests (pages) - Network first for fresh data
   if (request.mode === 'navigate') {
     event.respondWith(
       caches.open(DYNAMIC_CACHE).then((cache) => {
-        return cache.match(request).then((response) => {
-          if (response) {
-            // Serve from cache and update in background
-            fetch(request).then((fetchResponse) => {
-              if (fetchResponse.status === 200) {
-                cache.put(request, fetchResponse.clone())
-              }
-            }).catch(() => {})
-            return response
+        // Try network first for fresh content
+        return fetch(request, { cache: 'no-cache' }).then((fetchResponse) => {
+          if (fetchResponse.status === 200) {
+            cache.put(request, fetchResponse.clone())
           }
-          
-          return fetch(request).then((fetchResponse) => {
-            if (fetchResponse.status === 200) {
-              cache.put(request, fetchResponse.clone())
+          return fetchResponse
+        }).catch(() => {
+          // Fallback to cache if network fails
+          return cache.match(request).then((cachedResponse) => {
+            if (cachedResponse) {
+              return cachedResponse
             }
-            return fetchResponse
-          }).catch(() => {
-            // Return cached root page as fallback
+            // Final fallback to root page
             return cache.match('/').then((fallback) => {
               return fallback || new Response('Offline', { status: 503 })
             })
@@ -167,6 +162,30 @@ self.addEventListener('push', (event) => {
         icon: '/icons/icon-192x192.png',
         badge: '/icons/icon-72x72.png',
         tag: 'two-do-notification',
+      })
+    )
+  }
+})
+
+// Message handler for manual cache refresh
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'REFRESH_CACHE') {
+    event.waitUntil(
+      caches.keys().then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => {
+            if (cacheName.startsWith('two-do-')) {
+              return caches.delete(cacheName)
+            }
+          })
+        )
+      }).then(() => {
+        // Notify that cache was cleared
+        self.clients.matchAll().then((clients) => {
+          clients.forEach((client) => {
+            client.postMessage({ type: 'CACHE_REFRESHED' })
+          })
+        })
       })
     )
   }

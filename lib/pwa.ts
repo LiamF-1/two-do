@@ -93,3 +93,62 @@ export function isRunningAsPWA(): boolean {
     (window.navigator as any).standalone === true
   )
 }
+
+export function refreshPWACache(): Promise<void> {
+  return new Promise((resolve) => {
+    if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+      resolve()
+      return
+    }
+
+    // Send message to service worker to refresh cache
+    navigator.serviceWorker.ready.then((registration) => {
+      if (registration.active) {
+        registration.active.postMessage({ type: 'REFRESH_CACHE' })
+        
+        // Listen for cache refresh confirmation
+        const messageHandler = (event: MessageEvent) => {
+          if (event.data && event.data.type === 'CACHE_REFRESHED') {
+            navigator.serviceWorker.removeEventListener('message', messageHandler)
+            resolve()
+          }
+        }
+        
+        navigator.serviceWorker.addEventListener('message', messageHandler)
+        
+        // Fallback timeout
+        setTimeout(() => {
+          navigator.serviceWorker.removeEventListener('message', messageHandler)
+          resolve()
+        }, 5000)
+      } else {
+        resolve()
+      }
+    }).catch(() => {
+      resolve()
+    })
+  })
+}
+
+export function setupPWARefresh() {
+  if (typeof window === 'undefined' || !isRunningAsPWA()) {
+    return
+  }
+
+  // Auto-refresh when app becomes visible (user switches back to app)
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      // Refresh cache and reload page to get fresh data
+      refreshPWACache().then(() => {
+        window.location.reload()
+      })
+    }
+  })
+
+  // Also refresh on focus
+  window.addEventListener('focus', () => {
+    refreshPWACache().then(() => {
+      window.location.reload()
+    })
+  })
+}

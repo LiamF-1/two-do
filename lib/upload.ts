@@ -24,12 +24,20 @@ export async function processAndSaveImage(
   file: File
 ): Promise<ProcessedImage> {
   // Validate file
+  if (!file || !file.type) {
+    throw new Error('Invalid file. Please select a valid image file.')
+  }
+
   if (!ALLOWED_TYPES.includes(file.type)) {
     throw new Error('Invalid file type. Only JPEG, PNG, and WebP are allowed.')
   }
 
   if (file.size > MAX_FILE_SIZE) {
     throw new Error('File too large. Maximum size is 10MB.')
+  }
+
+  if (file.size === 0) {
+    throw new Error('File is empty. Please select a valid image file.')
   }
 
   await ensureUploadDir()
@@ -41,27 +49,47 @@ export async function processAndSaveImage(
   const thumbnailFilename = `thumb-${filename}`
   const thumbnailPath = path.join(UPLOAD_DIR, thumbnailFilename)
 
-  // Convert File to Buffer
-  const arrayBuffer = await file.arrayBuffer()
-  const buffer = Buffer.from(arrayBuffer)
+  try {
+    // Convert File to Buffer
+    const arrayBuffer = await file.arrayBuffer()
+    const buffer = Buffer.from(arrayBuffer)
 
-  // Process and save original (max 1200px wide)
-  await sharp(buffer)
-    .resize(1200, null, {
-      withoutEnlargement: true,
-      fit: 'inside'
-    })
-    .jpeg({ quality: 85 })
-    .toFile(originalPath)
+    // Validate that it's actually an image by trying to read metadata
+    const metadata = await sharp(buffer).metadata()
+    if (!metadata.format) {
+      throw new Error('File is not a valid image')
+    }
 
-  // Create thumbnail (300px wide)
-  await sharp(buffer)
-    .resize(300, 300, {
-      fit: 'cover',
-      position: 'center'
-    })
-    .jpeg({ quality: 80 })
-    .toFile(thumbnailPath)
+    // Process and save original (max 1200px wide)
+    await sharp(buffer)
+      .resize(1200, null, {
+        withoutEnlargement: true,
+        fit: 'inside'
+      })
+      .jpeg({ quality: 85 })
+      .toFile(originalPath)
+
+    // Create thumbnail (300px wide)
+    await sharp(buffer)
+      .resize(300, 300, {
+        fit: 'cover',
+        position: 'center'
+      })
+      .jpeg({ quality: 80 })
+      .toFile(thumbnailPath)
+  } catch (error) {
+    // Clean up any partially created files
+    try {
+      const fs = await import('fs/promises')
+      await fs.unlink(originalPath).catch(() => {})
+      await fs.unlink(thumbnailPath).catch(() => {})
+    } catch {}
+    
+    if (error instanceof Error) {
+      throw new Error(`Failed to process image: ${error.message}`)
+    }
+    throw new Error('Failed to process image')
+  }
 
   return {
     originalPath: `/uploads/${filename}`,
