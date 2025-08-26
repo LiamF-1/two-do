@@ -4,6 +4,9 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { GroupContent } from '@/components/group-content'
 
+// Disable static generation - this page needs database access
+export const dynamic = 'force-dynamic'
+
 async function getUserPair(userId: string, pairId: string) {
   const membership = await prisma.pairMember.findUnique({
     where: {
