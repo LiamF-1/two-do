@@ -1,0 +1,105 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["twodo"]
+}
+
+model User {
+  id            String       @id @default(cuid())
+  email         String       @unique
+  passwordHash  String
+  name          String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  
+  // Relations
+  memberships   PairMember[]
+  completions   Completion[]
+  invites       Invite[]
+  
+  @@schema("twodo")
+}
+
+model Pair {
+  id          String       @id @default(cuid())
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  
+  // Relations
+  members     PairMember[]
+  items       Item[]
+  invites     Invite[]
+  
+  @@schema("twodo")
+}
+
+model PairMember {
+  id        String  @id @default(cuid())
+  userId    String
+  pairId    String
+  role      String  @default("member")
+  
+  // Relations
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pair      Pair    @relation(fields: [pairId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, pairId])
+  @@schema("twodo")
+}
+
+model Invite {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  creatorId String
+  pairId    String?
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  usedAt    DateTime?
+  
+  // Relations
+  creator   User     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  pair      Pair?    @relation(fields: [pairId], references: [id], onDelete: Cascade)
+  
+  @@schema("twodo")
+}
+
+model Item {
+  id          String    @id @default(cuid())
+  pairId      String
+  title       String
+  notes       String?
+  position    Int       @default(0)
+  dueDate     DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  completedAt DateTime?
+  
+  // Relations
+  pair        Pair      @relation(fields: [pairId], references: [id], onDelete: Cascade)
+  completion  Completion?
+  
+  @@index([pairId, position])
+  @@schema("twodo")
+}
+
+model Completion {
+  id          String   @id @default(cuid())
+  itemId      String   @unique
+  userId      String
+  photoPath   String
+  caption     String?
+  createdAt   DateTime @default(now())
+  
+  // Relations
+  item        Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@schema("twodo")
+}
