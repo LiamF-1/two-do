@@ -58,7 +58,8 @@ jobs:
       branch: main
     
     run_command: |
-      npx prisma db push --accept-data-loss
+      npx prisma migrate deploy
+      npx prisma generate
     
     environment_slug: node-js
     instance_count: 1
